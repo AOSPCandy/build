@@ -28,6 +28,7 @@ Invoke ". build/envsetup.sh" from your shell to add the following functions to y
 - godir:     Go to the directory containing a file.
 - aospremote: Add git remote for matching AOSP repository
 - cafremote: Add git remote for matching CodeAurora repository.
+- cmremote:  Add git remote for matching CyanogenMod repository.
 - mka:       Builds using SCHED_BATCH on all processors.
 - mkap:      Builds the module(s) using mka and pushes them to the device.
 - cmka:      Cleans and builds using mka.
@@ -1792,6 +1793,23 @@ function cafremote()
     fi
     git remote add caf git://codeaurora.org/$PFX$PROJECT
     echo "Remote 'caf' created"
+}
+
+function cmremote()
+{
+    if ! git rev-parse --git-dir &> /dev/null
+    then
+        echo ".git directory not found. Please run this from the root directory of the Android repository you wish to set up."
+        return 1
+    fi
+    git remote rm cm 2> /dev/null
+    PROJECT=$(pwd -P | sed "s#$ANDROID_BUILD_TOP\/##" | sed "s#"/"#"_"#")
+    if (echo $PROJECT | grep -qv "^device")
+    then
+        PFX="android_"
+    fi
+    git remote add cm https://github.com/CyanogenMod/$PFX$PROJECT
+    echo "Remote 'cm' created"
 }
 
 function installboot()
